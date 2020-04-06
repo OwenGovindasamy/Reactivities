@@ -8,7 +8,7 @@ class App extends Component {
     values: []
   };
   componentDidMount() {
-    axios.get("http://localhost:5000/API/VALUES").then(response => {
+    axios.get("http://localhost:5000/api/Values").then(response => {
       this.setState({
         values: response.data
       });
@@ -22,7 +22,6 @@ class App extends Component {
           <Icon name="users" />
           <Header.Content>
             Account Settings
-            <Header.Subheader>Reactivities</Header.Subheader>
           </Header.Content>
         </Header>
         <List>
