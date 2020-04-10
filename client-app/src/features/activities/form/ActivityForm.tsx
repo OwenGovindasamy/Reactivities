@@ -1,15 +1,20 @@
-import React, { useState, ChangeEvent } from "react";
+import React, { useState, FormEvent } from "react";
 import { Segment, Form, Button } from "semantic-ui-react";
 import { IActivity } from "../../../app/models/activity";
+import {v4 as uuid} from 'uuid';
 
 interface IProps {
   setEditMode: (editMode: boolean) => void;
   activity: IActivity;
+  createActivity: (activity: IActivity) => void;
+  editActivity: (activity: IActivity) => void;
 }
 
 const ActivityForm: React.FC<IProps> = ({
   setEditMode,
   activity: initialFormState,
+  createActivity,
+  editActivity
 }) => {
   const initializeForm = () => {
     if (initialFormState) {
@@ -29,46 +34,69 @@ const ActivityForm: React.FC<IProps> = ({
 
   const [activity, setActivity] = useState<IActivity>(initializeForm);
 
-  const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    //console.log(event.target.value)
-    //this method updates the virtual DOM which updated the actual dom to allow editing a field
-    const { name, value } = event.target;
+  const handleSubmit = () => {
+    //console.log(activity);
+    if(activity.id.length ===0)
+    {
+      let newactivity =
+      {
+        ...activity,
+        id: uuid()
+      }
+      
+      createActivity(newactivity);
+      console.log(newactivity);
+    }
+    else
+    {
+      editActivity(activity);
+    }
+  };
+
+  const handleInputChange = ( event: FormEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = event.currentTarget;
     setActivity({ ...activity, [name]: value });
   };
 
   return (
     <Segment clearing>
-      <Form>
+      <Form onSubmit={handleSubmit}>
         <Form.Input
           onChange={handleInputChange}
-          name="Title"
+          name="title"
           placeholder="Title"
           value={activity.title}
         />
-        {/* <Form.TextArea
+
+        <Form.TextArea
           onChange={handleInputChange}
-          name="Description"
+          name="description"
           rows={2}
           placeholder="Description"
           value={activity.description}
-        /> */}
+        />
         <Form.Input
           onChange={handleInputChange}
-          name="Category"
+          name="category"
           placeholder="Category"
           value={activity.category}
         />
         <Form.Input
           onChange={handleInputChange}
           name="date"
-          type="date"
+          type="datetime-local"
           placeholder="Date"
           value={activity.date}
         />
-        <Form.Input placeholder="City" value={activity.city} />
+        <Form.Input 
+        onChange={handleInputChange}
+        name="city"
+        placeholder="City" 
+        value={activity.city} 
+        />
         <Form.Input
           onChange={handleInputChange}
-          name="Venue"
+          name="venue"
           placeholder="Venue"
           value={activity.venue}
         />
