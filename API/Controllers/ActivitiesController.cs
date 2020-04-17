@@ -17,6 +17,7 @@ namespace API.Controllers
         public ActivitiesController(IMediator mediator)
         {
             _Mediator = mediator;
+            
         }
 
         [HttpGet]
