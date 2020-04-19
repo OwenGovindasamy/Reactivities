@@ -12,16 +12,8 @@ interface detailParams{
 
 const ActivityForm: React.FC<RouteComponentProps<detailParams>> = ({match, history}) => { //RouteComponentProps is a standard interface so we are only destructuring match from it
   const activityStore = useContext(ActivityStore);
-  const {createActivity, editActivity, submitting, cancelFormOpen, activity: initialFormState, loadActivity, clearActivity} = activityStore;
+  const {createActivity, editActivity, submitting, activity: initialFormState, loadActivity, clearActivity} = activityStore;
   
-  useEffect(() => {//this function runs everytime the component renders so we want to limit this to happen only when we editing hence the if()
-    if(match.params.id){
-      loadActivity(match.params.id).then(() => initialFormState && setActivity(initialFormState))
-    }
-    return () => {
-      clearActivity()
-    }
-  },[loadActivity,match.params.id,clearActivity,initialFormState])
   
   const [activity, setActivity] = useState<IActivity>({
     id: '',
@@ -32,7 +24,15 @@ const ActivityForm: React.FC<RouteComponentProps<detailParams>> = ({match, histo
     city: '',
     venue: ''
   });
-
+  useEffect(() => {//this function runs everytime the component renders so we want to limit this to happen only when we editing hence the if()
+    if(match.params.id && activity.id.length === 0){
+      loadActivity(match.params.id).then(() => initialFormState && setActivity(initialFormState))
+    }
+    return () => {
+      clearActivity()
+    }
+  },[loadActivity,match.params.id,clearActivity,initialFormState, activity.id.length])
+  
   const handleSubmit = () => {
     if (activity.id.length === 0) {
       let newActivity = {
@@ -95,7 +95,7 @@ const ActivityForm: React.FC<RouteComponentProps<detailParams>> = ({match, histo
         />
         <Button loading={submitting} floated='right' positive type='submit' content='Submit' />
         <Button
-          onClick={cancelFormOpen}
+          onClick={() => history.push('/activities')}
           floated='right'
           type='button'
           content='Cancel'
