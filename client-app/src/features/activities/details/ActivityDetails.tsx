@@ -25,9 +25,13 @@ const ActivityDetails: React.FC<RouteComponentProps<DetailParams>> = ({ match, h
 
   useEffect(() => {
     loadActivity(match.params.id);
-  }, [loadActivity, match.params.id]); ///run once
+  }, [loadActivity, match.params.id, history]); ///run once
 
-if (loadingInitial || !activity) return <LoadingComponent content='Loading Activity...'/> //activity is empty
+if (loadingInitial) 
+return <LoadingComponent content='Loading Activity...'/> //activity is empty
+
+if (!activity)
+return <h2>Activity Not Found</h2>
 
   return (
     <Grid>

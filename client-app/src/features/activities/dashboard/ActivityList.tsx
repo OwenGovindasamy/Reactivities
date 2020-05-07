@@ -7,10 +7,7 @@ import ActivityListItem from "./ActivityListItem";
 const ActivityList: React.FC = () => {
   const activityStore = useContext(ActivityStore);
   const {
-    activitiesByDate,
-    deleteActivity,
-    submitting,
-    target,
+    activitiesByDate
   } = activityStore;
   return (
     <Fragment>

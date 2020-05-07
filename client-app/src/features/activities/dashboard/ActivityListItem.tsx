@@ -1,13 +1,12 @@
-import React, { useContext } from "react";
+import React from "react";
 import { Item, Button, Segment, Icon } from "semantic-ui-react";
 import { Link } from "react-router-dom";
-import ActivityStore from "../../../app/Stores/activityStore";
 import { IActivity } from "../../../app/models/activity";
 
 const ActivityListItem: React.FC<{ activity: IActivity }> = ({ activity }) => {
   //tell activityListItem its going to receive from activityList then destructure.
-  const activityStore = useContext(ActivityStore);
-  const { deleteActivity, submitting, target } = activityStore;
+  //const activityStore = useContext(ActivityStore);
+  //const { deleteActivity, submitting, target } = activityStore;
   return (
     <Segment.Group>
       <Segment>
