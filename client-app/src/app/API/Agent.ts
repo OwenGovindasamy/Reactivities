@@ -22,6 +22,7 @@ axios.interceptors.response.use(undefined, error => {
     {
         toast.error('Network error - make sure API is running');
     }
+    throw error;
 })
 
 const responseBody = (response: AxiosResponse) => response.data;
