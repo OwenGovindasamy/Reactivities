@@ -28,7 +28,7 @@ const activityImageTextStyle = {
                       <Item.Content>
                         <Header
                           size='huge'
-                          content={'activity.Title'}
+                          content={activity.title}
                           style={{ color: 'white' }}
                         />
                         <p>{format(activity.date, 'eeee do MMMM')}</p>
