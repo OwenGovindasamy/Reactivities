@@ -1,7 +1,6 @@
-import React, { useState, FormEvent, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Segment, Form, Button, Grid } from "semantic-ui-react";
 import { v4 as uuid } from "uuid";
-import ActivityStore from "../../../app/Stores/activityStore";
 import { observer } from "mobx-react-lite";
 import { RouteComponentProps } from "react-router-dom";
 import { Form as FinalForm, Field } from "react-final-form";
@@ -15,7 +14,7 @@ import {combineValidators, isRequired, composeValidators, hasLengthGreaterThan} 
 import { combinedDateAndTime } from "../../../app/common/util/util";
 import SelectInput from "../../../app/common/form/SelectInput";
 import DateInput from "../../../app/common/form/DateInput";
-import { isRegExp } from "util";
+import { RootStoreContext } from "../../../app/Stores/rootStore";
 
 const validate  = combineValidators ({
   title: isRequired({message: 'The event title is required'}),
@@ -39,15 +38,13 @@ const ActivityForm: React.FC<RouteComponentProps<detailParams>> = ({
   history,
 }) => {
   //RouteComponentProps is a standard interface so we are only destructuring match from it
-  const activityStore = useContext(ActivityStore);
+  const rootStore = useContext(RootStoreContext);
   const {
     createActivity,
     editActivity,
     submitting,
-    activity: initialFormState,
     loadActivity,
-    clearActivity,
-  } = activityStore;
+  } = rootStore.activityStore;
 
   const [activity, setActivity] = useState(new ActivityFormValues());
   const [loading, setLoading] = useState(false);
