@@ -18,6 +18,7 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using AutoMapper;
 
 namespace API
 {
@@ -45,6 +46,7 @@ namespace API
                 });
             });
             services.AddMediatR(typeof(List.Handler).Assembly);
+            services.AddAutoMapper(typeof(List.Handler));
             services.AddControllers(opt => 
             {
                 var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
@@ -58,6 +60,14 @@ namespace API
                 var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);//configure Identity 'login'
                 identityBuilder.AddEntityFrameworkStores<DataContext>();//configure Identity 'login'
                 identityBuilder.AddSignInManager<SignInManager<AppUser>>();//configure Identity 'login'
+
+services.AddAuthorization(opt => {
+    opt.AddPolicy("IsActivityHost", policy => {
+        policy.Requirements.Add(new IsHostReqiurement());
+    });
+});
+
+services.AddTransient<IAuthorizationHandler, IsHostReqiurementHandler>(); // AddTransient this will only be available for this operation
 
                 var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"]));
 
