@@ -19,6 +19,8 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using AutoMapper;
+using Infrastructure.Photos;
+using Microsoft.AspNetCore.Mvc;
 
 namespace API
 {
@@ -35,53 +37,63 @@ namespace API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
-            services.AddDbContext<DataContext>(opt => 
+            services.AddDbContext<DataContext>(opt =>
             {
+                opt.UseLazyLoadingProxies();
                 opt.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
             });
 
-            services.AddCors(opt => {
-                opt.AddPolicy("CorsPolicy", policy => {
+            services.AddCors(opt =>
+            {
+                opt.AddPolicy("CorsPolicy", policy =>
+                {
                     policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:3000");
                 });
             });
             services.AddMediatR(typeof(List.Handler).Assembly);
             services.AddAutoMapper(typeof(List.Handler));
-            services.AddControllers(opt => 
+        
+            services.AddControllers(opt =>
             {
                 var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
                 opt.Filters.Add(new AuthorizeFilter(policy));
             }).AddFluentValidation(cfg =>
             {
                 cfg.RegisterValidatorsFromAssemblyContaining<Create>();
+            });
+
+            var builder = services.AddIdentityCore<AppUser>(); //configure Identity 'login'
+            var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);//configure Identity 'login'
+            identityBuilder.AddEntityFrameworkStores<DataContext>();//configure Identity 'login'
+            identityBuilder.AddSignInManager<SignInManager<AppUser>>();//configure Identity 'login'
+
+            services.AddAuthorization(opt =>
+            {
+                opt.AddPolicy("IsActivityHost", policy =>
+                {
+                    policy.Requirements.Add(new IsHostReqiurement());
                 });
+            });
 
-                var builder = services.AddIdentityCore<AppUser>(); //configure Identity 'login'
-                var identityBuilder = new IdentityBuilder(builder.UserType, builder.Services);//configure Identity 'login'
-                identityBuilder.AddEntityFrameworkStores<DataContext>();//configure Identity 'login'
-                identityBuilder.AddSignInManager<SignInManager<AppUser>>();//configure Identity 'login'
+            services.AddTransient<IAuthorizationHandler, IsHostReqiurementHandler>(); // AddTransient this will only be available for this operation
 
-services.AddAuthorization(opt => {
-    opt.AddPolicy("IsActivityHost", policy => {
-        policy.Requirements.Add(new IsHostReqiurement());
-    });
-});
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"]));
 
-services.AddTransient<IAuthorizationHandler, IsHostReqiurementHandler>(); // AddTransient this will only be available for this operation
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
+            {
+                opt.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters
+                {
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = key,
+                    ValidateAudience = false,
+                    ValidateIssuer = false
+                };
+            });//configure Identity 'login'
 
-                var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["TokenKey"]));
-
-                services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt => {
-                    opt.TokenValidationParameters = new Microsoft.IdentityModel.Tokens.TokenValidationParameters{
-                        ValidateIssuerSigningKey = true,
-                        IssuerSigningKey = key,
-                        ValidateAudience = false,
-                        ValidateIssuer = false
-                    };
-                });//configure Identity 'login'
-
-                services.AddScoped<IJwtGenerator, JwtGenerator>();
-                services.AddScoped<IUserAccessor, UserAccessor>();
+            services.AddScoped<IJwtGenerator, JwtGenerator>();
+            services.AddScoped<IUserAccessor, UserAccessor>();
+            services.AddScoped<IPhotoAccessor, PhotoAccessor>();
+            services.Configure<CloudinarySettings>(Configuration.GetSection("Cloudinary"));
         }
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -94,9 +106,8 @@ services.AddTransient<IAuthorizationHandler, IsHostReqiurementHandler>(); // Add
             }
 
             app.UseRouting();
-            
-            app.UseCors("CorsPolicy");
 
+            app.UseCors("CorsPolicy");
             app.UseAuthentication();
             app.UseAuthorization();
 

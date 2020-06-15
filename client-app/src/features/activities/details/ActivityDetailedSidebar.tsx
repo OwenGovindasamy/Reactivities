@@ -25,7 +25,7 @@ const ActivityDetailedSidebar: React.FC<IProps> = ({ attendees }) => {
         <List relaxed divided>
           {attendees.map((attendee) => (
             <Item key={attendee.userName} style={{ position: "relative" }}>
-              {attendee.IsHost && (
+              {attendee.isHost && (
                 <Label
                   style={{ position: "absolute" }}
                   color="orange"

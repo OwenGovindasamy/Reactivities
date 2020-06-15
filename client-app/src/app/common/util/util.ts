@@ -15,14 +15,14 @@ export const setActivityProps = (activity: IActivity, user: IUser) =>
 {
     activity.date = new Date(activity.date);
     activity.isGoing = activity.attendees.some(a => a.userName === user.username);//the some() returns true if something is found
-    activity.isHost = activity.attendees.some(a => a.userName === user.username && a.IsHost);
+    activity.isHost = activity.attendees.some(a => a.userName === user.username && a.isHost);
     return activity;
 }
 
 export const createAttendee = (user: IUser) : IAttendee => {
     return{
         displayName: user.displayName,
-        IsHost: false,
+        isHost: false,
         userName: user.username,
         image: user.image!
     }

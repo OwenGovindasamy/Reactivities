@@ -66,7 +66,7 @@ export default class ActivityStore {
       await Agent.Activities.create(activity);
 
       const attendee = createAttendee(this.rootStore.userStore.user!);
-        attendee.IsHost = true;
+        attendee.isHost = true;
         let attendees = [];
         attendees.push(attendee);
         activity.attendees = attendees;
@@ -205,7 +205,7 @@ export default class ActivityStore {
 
   @action testAction = () => {
     if (this.activity) {
-      return this.activity.attendees.filter(x => x.IsHost)[0];
+      return this.activity.attendees.filter(x => x.isHost)[0];
     }
   }
 
