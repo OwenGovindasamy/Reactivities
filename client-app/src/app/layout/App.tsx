@@ -13,6 +13,7 @@ import HomePage from "../../features/home/HomePage";
 import { RootStoreContext } from "../Stores/rootStore";
 import LoadingComponent from "./LoadingComponent";
 import ModalContainer from "../common/modals/ModalContainer";
+import ProfilePage from "../../features/profiles/ProfilePage";
 const App: React.FC<RouteComponentProps> = ({ location }) => {
   const rootStore = useContext(RootStoreContext)
   const { setAppLoaded, token, appLoaded } = rootStore.commonStore;
@@ -45,7 +46,7 @@ if (!appLoaded) return <LoadingComponent content='Loading app...'/>
                 path={["/createActivity", "/manage/:id"]}
                 component={ActivityForm}
               />
-              <Route path="/login" component={LoginForm} />
+              <Route path="/profile/:username" component={ProfilePage} />
               <Route
                 key={location.key}
                 path="/activities/:id"

@@ -6,24 +6,31 @@ import { format } from "date-fns";
 import ActivityListItemAttendees from "./ActivityListItemAttendees";
 
 const ActivityListItem: React.FC<{ activity: IActivity }> = ({ activity }) => {
-  const host = activity?.attendees.filter(x => x.isHost)[0];
+  const host = activity?.attendees.filter((x) => x.isHost)[0];
   return (
     <Segment.Group>
       <Segment>
         <Item.Group>
           <Item>
-             <Item.Image size='tiny' circular src={host.image || '/assets/user.png'} /> 
+            <Item.Image
+              size="tiny"
+              circular
+              src={host.image || "/assets/user.png"}
+              style={{ marginBottom: 3 }}
+            />
             <Item.Content>
               <Item.Header as={Link} to={`/activities/${activity.id}`}>
                 {activity.title}
               </Item.Header>
-              <Item.Description>Hosted by {host.displayName}</Item.Description> 
+              <Item.Description>
+                Hosted by <Link to={`/profile/${host.userName}`}> {host.displayName}</Link>
+              </Item.Description>
               {activity.isHost && (
                 <Item.Description>
                   <Label
                     basic
-                    color='orange'
-                    content='You are hosting this activity'
+                    color="orange"
+                    content="You are hosting this activity"
                   />
                 </Item.Description>
               )}
@@ -31,8 +38,8 @@ const ActivityListItem: React.FC<{ activity: IActivity }> = ({ activity }) => {
                 <Item.Description>
                   <Label
                     basic
-                    color='green'
-                    content='You are going to this activity'
+                    color="green"
+                    content="You are going to this activity"
                   />
                 </Item.Description>
               )}
@@ -41,8 +48,8 @@ const ActivityListItem: React.FC<{ activity: IActivity }> = ({ activity }) => {
         </Item.Group>
       </Segment>
       <Segment>
-        <Icon name='clock' /> {format(activity.date, 'h:mm a')}
-        <Icon name='marker' /> {activity.venue}, {activity.city}
+        <Icon name="clock" /> {format(activity.date, "h:mm a")}
+        <Icon name="marker" /> {activity.venue}, {activity.city}
       </Segment>
       <Segment secondary>
         <ActivityListItemAttendees attendees={activity.attendees} />
@@ -52,9 +59,9 @@ const ActivityListItem: React.FC<{ activity: IActivity }> = ({ activity }) => {
         <Button
           as={Link}
           to={`/activities/${activity.id}`}
-          floated='right'
-          content='View'
-          color='blue'
+          floated="right"
+          content="View"
+          color="blue"
         />
       </Segment>
     </Segment.Group>
