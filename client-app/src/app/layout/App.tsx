@@ -8,7 +8,6 @@ import ActivityForm from "../../features/activities/form/ActivityForm";
 import ActivityDetails from "../../features/activities/details/ActivityDetails";
 import NotFound from "./NotFound";
 import {ToastContainer} from 'react-toastify'
-import LoginForm from "../../features/user/LoginForm";
 import HomePage from "../../features/home/HomePage";
 import { RootStoreContext } from "../Stores/rootStore";
 import LoadingComponent from "./LoadingComponent";
