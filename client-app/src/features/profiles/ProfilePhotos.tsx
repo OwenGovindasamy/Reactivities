@@ -3,7 +3,6 @@ import { Tab, Header, Card, Image, Button, Grid } from "semantic-ui-react";
 import { RootStoreContext } from "../../app/Stores/rootStore";
 import PhotoUploadWidget from "../../app/common/photoUpload/PhotoUploadWidget";
 import { observer } from "mobx-react-lite";
-import PhotoWidgetCropper from "../../app/common/photoUpload/PhotoWidgetCropper";
 
 const ProfilePhotos = () => {
   const rootStore = useContext(RootStoreContext);

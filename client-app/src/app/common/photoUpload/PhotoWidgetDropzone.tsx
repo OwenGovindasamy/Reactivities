@@ -1,6 +1,7 @@
 import React, { useCallback } from "react";
 import { useDropzone } from "react-dropzone";
 import { Icon, Header } from "semantic-ui-react";
+import { observer } from "mobx-react-lite";
 
 interface IProps {
   setFiles: (files: object[]) => void;
@@ -44,4 +45,4 @@ const PhotoWidgetDropzone: React.FC<IProps> = ({ setFiles }) => {
     </div>
   );
 };
-export default PhotoWidgetDropzone;
+export default observer (PhotoWidgetDropzone);
