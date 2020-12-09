@@ -6,6 +6,11 @@ import { history } from "../..";
 import { toast } from "react-toastify";
 import { RootStore } from "./rootStore";
 import { setActivityProps, createAttendee } from "../common/util/util";
+import {
+  HubConnection,
+  HubConnectionBuilder,
+  LogLevel,
+} from "@microsoft/signalr";
 
 export default class ActivityStore {
   rootStore: RootStore;
@@ -19,13 +24,40 @@ export default class ActivityStore {
   @observable submitting = false;
   @observable target = "";
   @observable loading = false;
+  @observable.ref hubConnection: HubConnection | null = null;
 
+  @action createHubConnection = () => {
+    this.hubConnection = new HubConnectionBuilder()
+      .withUrl("http://localhost:5000/chat", {
+        accessTokenFactory: () => this.rootStore.commonStore.token!,
+      })
+      .configureLogging(LogLevel.Information)
+      .build();
+    this.hubConnection
+      .start()
+      .then(() => console.log(this.hubConnection!.state))
+      .catch((error) => console.log("Error establishing connection", error));
+    this.hubConnection.on("ReceiveComment", (comment) => {
+      this.activity!.comments.push(comment);
+    });
+  };
+  @action stopHubConnection = () => {
+    this.hubConnection!.stop();
+  };
   @computed get activitiesByDate() {
     return this.groupActivitiesByDate(
       Array.from(this.activityRegistry.values())
     );
   }
-
+  @action addComment = async (values: any) => {
+    values.ActivityId = this.activity!.id
+    try{
+      await this.hubConnection!.invoke('SendComment', values) //invoke('SendComment') is the method name in chathub.cs
+    }
+    catch(error){
+      console.log(error)
+    }
+  }
   groupActivitiesByDate(activities: IActivity[]) {
     const sortedActivities = activities.sort(
       (a, b) => a.date.getTime() - b.date.getTime()
@@ -66,11 +98,11 @@ export default class ActivityStore {
       await Agent.Activities.create(activity);
 
       const attendee = createAttendee(this.rootStore.userStore.user!);
-        attendee.isHost = true;
-        let attendees = [];
-        attendees.push(attendee);
-        activity.attendees = attendees;
-        activity.isHost = true;
+      attendee.isHost = true;
+      let attendees = [];
+      attendees.push(attendee);
+      activity.attendees = attendees;
+      activity.isHost = true;
 
       runInAction("create activity", () => {
         this.activityRegistry.set(activity.id, activity);
@@ -205,10 +237,9 @@ export default class ActivityStore {
 
   @action testAction = () => {
     if (this.activity) {
-      return this.activity.attendees.filter(x => x.isHost)[0];
+      return this.activity.attendees.filter((x) => x.isHost)[0];
     }
-  }
-
+  };
 }
 
 //export default createContext(new ActivityStore());
