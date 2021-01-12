@@ -52,7 +52,7 @@ namespace Application.Comments
 
                 var success = await _context.SaveChangesAsync() > 0;
 
-                if (success) return _mapper.Map<CommentDto>(comment);
+                if (success) return _mapper.Map<CommentDto>(comment);//map to is CommentDto map from is comment
 
                 throw new Exception("Problem saving changes");
             }

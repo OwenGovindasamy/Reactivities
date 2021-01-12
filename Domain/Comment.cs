@@ -9,6 +9,5 @@ namespace Domain
         public virtual AppUser Author { get; set; }
         public virtual Activity Activity { get; set; }
         public DateTime CreatedAt { get; set; }
-        
     }
 }
